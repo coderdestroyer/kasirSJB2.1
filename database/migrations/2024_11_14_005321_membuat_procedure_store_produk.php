@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
-class TambahProcedureInsertProduk extends Migration
+class MembuatProcedureStoreProduk extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class TambahProcedureInsertProduk extends Migration
      */
     public function up()
     {
-        $procedure = "
+        $procedure ="
         CREATE PROCEDURE store_produk(
             IN p_nama_produk VARCHAR(255),
             IN p_harga_jual DECIMAL(10,2),
@@ -31,13 +31,13 @@ class TambahProcedureInsertProduk extends Migration
 
             SET v_kode_produk = CONCAT('P', LPAD(v_last_id + 1, 6, '0'));
 
-            INSERT INTO produk (kode_produk, nama_produk, harga_jual, id_kategori)
-            VALUES (v_kode_produk, p_nama_produk, p_harga_jual, p_id_kategori);
+            INSERT INTO produk (kode_produk, nama_produk, harga_jual, id_kategori, created_at, updated_at)
+            VALUES (v_kode_produk, p_nama_produk, p_harga_jual, p_id_kategori, NOW(), NOW());
 
             SET v_last_id = LAST_INSERT_ID();
 
-            INSERT INTO detail_produk (id_produk, stok_produk, merk, harga_beli_produk)
-            VALUES (v_last_id, p_stok_produk, p_merk, p_harga_beli_produk);
+            INSERT INTO detail_produk (id_produk, stok_produk, merk, harga_beli_produk, created_at, updated_at)
+            VALUES (v_last_id, p_stok_produk, p_merk, p_harga_beli_produk, NOW(), NOW());
         END;
         ";
 
@@ -52,5 +52,6 @@ class TambahProcedureInsertProduk extends Migration
     public function down()
     {
         DB::unprepared('DROP PROCEDURE IF EXISTS store_produk');
+
     }
 }

@@ -32,6 +32,6 @@ class BuatDetailProdukTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('detail_produk');
     }
 }

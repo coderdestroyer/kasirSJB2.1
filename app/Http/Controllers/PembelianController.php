@@ -20,6 +20,7 @@ class PembelianController extends Controller
     public function data()
     {
         $pembelian = Pembelian::orderBy('id_pembelian', 'desc')->get();
+        $detilpembelian = PembelianDetail::orderBy('id_pembelian', 'desc')->get();
 
         return datatables()
             ->of($pembelian)
@@ -31,7 +32,15 @@ class PembelianController extends Controller
                 return $pembelian->supplier->nama;
             })
             ->addColumn('status', function ($pembelian) {
-                return $pembelian->status;
+                $belumLunas = $pembelian->detilPembelian->contains('status', 'belum lunas'); 
+                if ($belumLunas) {
+                    return 'Belum Lunas';
+                } else {
+                    // Logika untuk menentukan status jika tidak ada yang 'Belum Lunas'
+                    // Misalnya, 'Lunas' atau status lainnya sesuai kebutuhan
+                    return 'Lunas'; 
+                }
+    
             })
             ->addColumn('aksi', function ($pembelian) {
                 return '
@@ -92,6 +101,9 @@ class PembelianController extends Controller
             })
             ->addColumn('jumlah', function ($detail) {
                 return format_uang($detail->jumlah);
+            })
+            ->addColumn('status', function ($detail) {
+                return $detail->status;
             })
             ->addColumn('subtotal', function ($detail) {
                 return 'Rp. '. format_uang($detail->subtotal);
